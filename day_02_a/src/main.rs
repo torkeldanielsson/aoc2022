@@ -6,7 +6,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut score = 0;
 
     for line in input.lines() {
-        let parts = line.split(" ").collect::<Vec<&str>>();
+        let parts = line.split(' ').collect::<Vec<&str>>();
         let (them, us) = (parts[0], parts[1]);
         score += match us {
             "X" => {
