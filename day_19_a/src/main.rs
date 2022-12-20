@@ -37,39 +37,40 @@ fn iterate(
     max_geodes: &mut i32,
     mut history: String,
 ) {
-    history = format!("{}== Minute {} ==\n", history, t);
-
-    resources.ore += bots.ore;
-    resources.clay += bots.clay;
-    resources.obsidian += bots.obsidian;
-    resources.geode += bots.geode;
-
-    history = format!("{}{} ore => {}\n", history, bots.ore, resources.ore);
-    if bots.clay > 0 {
-        history = format!("{}{} clay => {}\n", history, bots.clay, resources.clay);
-    }
-    if bots.obsidian > 0 {
-        history = format!(
-            "{}{} obsidian => {}\n",
-            history, bots.obsidian, resources.obsidian
-        );
-    }
-    if bots.geode > 0 {
-        history = format!("{}{} geode => {}\n", history, bots.geode, resources.geode);
-    }
-
-    if resources.geode > *max_geodes {
-        *max_geodes = resources.geode;
-
-        println!("############### {}", max_geodes);
-        println!("{history}");
-        println!();
-    }
+    t += 1;
+    history = format!("{}\n\n== Minute {} ==", history, t);
 
     if t >= 24 {
+        resources.ore += bots.ore;
+        resources.clay += bots.clay;
+        resources.obsidian += bots.obsidian;
+        resources.geode += bots.geode;
+
+        history = format!("{}\n{} ore => {}", history, bots.ore, resources.ore);
+        if bots.clay > 0 {
+            history = format!("{}\n{} clay => {}", history, bots.clay, resources.clay);
+        }
+        if bots.obsidian > 0 {
+            history = format!(
+                "{}\n{} obsidian => {}",
+                history, bots.obsidian, resources.obsidian
+            );
+        }
+        if bots.geode > 0 {
+            history = format!("{}\n{} geode => {}", history, bots.geode, resources.geode);
+        }
+
+        if resources.geode > *max_geodes {
+            *max_geodes = resources.geode;
+
+            println!("############### GEODES: {}", max_geodes);
+            println!("{history}");
+            println!("############### GEODES: {}", max_geodes);
+            println!();
+        }
+
         return;
     }
-    t += 1;
 
     for combo in [
         Bots {
@@ -122,13 +123,65 @@ fn iterate(
             && new_resources.obsidian >= 0
             && new_resources.geode >= 0
         {
+            let mut new_history = history.clone();
+
+            if combo.ore > 0 {
+                new_history = format!(
+                    "{}\nSpend {} ore to start building an ore-collecting robot.",
+                    new_history, blueprint.ore_bot_ore
+                );
+            }
+            if combo.clay > 0 {
+                new_history = format!(
+                    "{}\nSpend {} ore to start building an clay-collecting robot.",
+                    new_history, blueprint.clay_bot_ore
+                );
+            }
+            if combo.obsidian > 0 {
+                new_history = format!(
+                    "{}\nSpend {} ore and {} clay to start building an obsidian-collecting robot.",
+                    new_history, blueprint.obsidian_bot_ore, blueprint.obsidian_bot_clay
+                );
+            }
+            if combo.geode > 0 {
+                new_history = format!(
+                    "{}\nSpend {} ore and {} obsidian to start building a geode-cracking robot.",
+                    new_history, blueprint.geode_bot_ore, blueprint.geode_bot_obsidian
+                );
+            }
+
+            new_resources.ore += bots.ore;
+            new_resources.clay += bots.clay;
+            new_resources.obsidian += bots.obsidian;
+            new_resources.geode += bots.geode;
+
+            new_history = format!("{}\n{} ore => {}", new_history, bots.ore, new_resources.ore);
+            if bots.clay > 0 {
+                new_history = format!(
+                    "{}\n{} clay => {}",
+                    new_history, bots.clay, new_resources.clay
+                );
+            }
+            if bots.obsidian > 0 {
+                new_history = format!(
+                    "{}\n{} obsidian => {}",
+                    new_history, bots.obsidian, new_resources.obsidian
+                );
+            }
+            if bots.geode > 0 {
+                new_history = format!(
+                    "{}\n{} geode => {}",
+                    new_history, bots.geode, new_resources.geode
+                );
+            }
+
             iterate(
                 blueprint,
                 t,
                 new_resources,
                 new_bots,
                 max_geodes,
-                format!("{}\n{:?}\n", history, combo),
+                new_history,
             );
         }
     }
