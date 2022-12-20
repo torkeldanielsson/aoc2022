@@ -6,30 +6,31 @@ fn main() -> Result<(), Box<dyn Error>> {
         .lines()
         .map(|s| {
             i += 1;
-            (s.parse::<i32>().unwrap(), i)
+            (s.parse::<i64>().unwrap() * 811589153, i)
         })
         .collect::<Vec<_>>();
 
-    for i in 1..=i {
-        let mut index = 0;
-        for ii in 0..numbers.len() {
-            if numbers[ii].1 == i {
-                index = ii;
-                break;
+    for _ in 0..10 {
+        for i in 1..=i {
+            let mut index = 0;
+            for ii in 0..numbers.len() {
+                if numbers[ii].1 == i {
+                    index = ii;
+                    break;
+                }
             }
-        }
 
-        let n = numbers.remove(index);
-        let mut pos = n.0 + index as i32;
-        while pos < 0 {
-            pos += numbers.len() as i32;
+            let n = numbers.remove(index);
+            let mut pos = n.0 + index as i64;
+            while pos < 0 {
+                pos += numbers.len() as i64;
+            }
+            pos %= numbers.len() as i64;
+            numbers.insert(pos as usize, (n.0, i));
         }
-        pos %= numbers.len() as i32;
-        numbers.insert(pos as usize, (n.0, i));
-        //println!("{i} {index} {} {i}->{pos} => {numbers:?}", n.0);
     }
 
-    for i in 1..=i {
+    for i in 0..i {
         if numbers[i].0 == 0 {
             let num_len = numbers.len();
             let v1 = numbers[(i + 1000) % num_len].0;
