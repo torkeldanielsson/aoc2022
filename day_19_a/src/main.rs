@@ -36,8 +36,14 @@ fn iterate(
     mut resources: Resources,
     bots: Bots,
     max_geodes: Arc<Mutex<std::collections::HashMap<i32, i32>>>,
+    best_geodes_at_timestep: &mut std::collections::HashMap<i32, i32>,
 ) {
     t += 1;
+
+    if *best_geodes_at_timestep.get(&t).unwrap_or(&0) > resources.geode {
+        return;
+    }
+    best_geodes_at_timestep.insert(t, resources.geode);
 
     if t >= 24 {
         resources.ore += bots.ore;
@@ -54,10 +60,24 @@ fn iterate(
         return;
     }
 
+    let mut possible_combos = Vec::new();
+
     for combo in [
         Bots {
             ore: 0,
             clay: 0,
+            obsidian: 0,
+            geode: 1,
+        },
+        Bots {
+            ore: 0,
+            clay: 0,
+            obsidian: 1,
+            geode: 0,
+        },
+        Bots {
+            ore: 0,
+            clay: 1,
             obsidian: 0,
             geode: 0,
         },
@@ -69,21 +89,9 @@ fn iterate(
         },
         Bots {
             ore: 0,
-            clay: 1,
-            obsidian: 0,
-            geode: 0,
-        },
-        Bots {
-            ore: 0,
-            clay: 0,
-            obsidian: 1,
-            geode: 0,
-        },
-        Bots {
-            ore: 0,
             clay: 0,
             obsidian: 0,
-            geode: 1,
+            geode: 0,
         },
     ] {
         let mut new_resources = resources.clone();
@@ -110,8 +118,23 @@ fn iterate(
             new_resources.obsidian += bots.obsidian;
             new_resources.geode += bots.geode;
 
-            iterate(blueprint, t, new_resources, new_bots, max_geodes.clone());
+            possible_combos.push((new_resources, new_bots));
+
+            if combo.geode > 1 {
+                break;
+            }
         }
+    }
+
+    for combo in possible_combos {
+        iterate(
+            blueprint,
+            t,
+            combo.0,
+            combo.1,
+            max_geodes.clone(),
+            best_geodes_at_timestep,
+        );
     }
 }
 
@@ -124,6 +147,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     {
         let local_max_geodes = max_geodes.clone();
         threads.push(std::thread::spawn(move || {
+            let mut best_geodes_at_timestep = std::collections::HashMap::new();
             iterate(
                 &blueprint,
                 0,
@@ -140,6 +164,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     geode: 0,
                 },
                 local_max_geodes,
+                &mut best_geodes_at_timestep,
             );
         }));
     }
@@ -157,6 +182,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         println!("res: {res}");
     }
+
+    // 1070 too low
 
     Ok(())
 }
