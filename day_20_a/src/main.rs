@@ -2,7 +2,7 @@ use std::{error::Error, fs};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut i = 0;
-    let mut numbers = fs::read_to_string("input")?
+    let mut numbers = fs::read_to_string("test")?
         .lines()
         .map(|s| {
             i += 1;
