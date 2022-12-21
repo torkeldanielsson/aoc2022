@@ -82,12 +82,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("qggp: {}", pull("qggp", &equations, &known_numbers));
     */
 
-    for i in 0..1_000_000_000_000 as i64 {
-        if i % 100_000_000 == 0 {
-            println!("{i}");
-        }
-
-        if ((634
+    for i in 3272260910000..3272260920000 {
+        let num: i64 = (634
             + (101692068627800
                 - (((((2
                     * (516
@@ -155,13 +151,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                     / 4)
                     + 88)
                     * 3)))
-            / 11)
-            == 792784087587
-        {
-            println!("!! {i}");
-            return Ok(());
-        }
+            / 11;
+
+            println!("{i}: {num}: {}", num - 792784087587);
     }
+
+    // 792784087587
+    // 9242150604799
 
     Ok(())
 }
