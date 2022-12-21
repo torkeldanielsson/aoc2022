@@ -2,7 +2,7 @@ use std::{error::Error, fs};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut i = 0;
-    let mut numbers = fs::read_to_string("test")?
+    let mut numbers = fs::read_to_string("input")?
         .lines()
         .map(|s| {
             i += 1;
@@ -26,7 +26,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         pos %= numbers.len() as i32;
         numbers.insert(pos as usize, (n.0, i));
-        //println!("{i} {index} {} {i}->{pos} => {numbers:?}", n.0);
     }
 
     for i in 1..=i {

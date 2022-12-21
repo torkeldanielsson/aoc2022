@@ -22,6 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let n = numbers.remove(index);
             let mut pos = n.0 + index as i64;
+            pos %= numbers.len() as i64;
             while pos < 0 {
                 pos += numbers.len() as i64;
             }
