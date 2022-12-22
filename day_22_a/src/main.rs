@@ -17,9 +17,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let map = {
         let mut res = HashMap::new();
         for (y, line) in map.lines().enumerate() {
-            max.y = std::cmp::max(max.y, y as i32);
+            max.y = std::cmp::max(max.y, y as i32 + 1);
             for (x, c) in line.chars().enumerate() {
-                max.x = std::cmp::max(max.x, x as i32);
+                max.x = std::cmp::max(max.x, x as i32 + 1);
                 match c {
                     ' ' => {}
                     '.' => {
