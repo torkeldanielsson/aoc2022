@@ -45,10 +45,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut path = HashMap::new();
 
     let mut is_num = true;
-    for m in moves
+    for (i,m) in moves
         .replace('R', " R ")
         .replace('L', " L ")
-        .split_ascii_whitespace()
+        .split_ascii_whitespace().enumerate()
     {
         if is_num {
             let num = m.parse::<i32>().unwrap();
@@ -115,6 +115,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 _ => panic!(),
             },
         );
+
+        println!("{} {}",pos.x,pos.y);
     }
 
     for y in 1..=max.y {
