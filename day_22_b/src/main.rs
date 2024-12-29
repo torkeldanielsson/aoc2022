@@ -1,4 +1,4 @@
-use std::{collections::HashMap, error::Error, fs};
+use std::{collections::HashMap, error::Error, fs, time::Instant};
 
 use glam::ivec2;
 
@@ -9,7 +9,9 @@ enum Pos {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let input = fs::read_to_string("input")?;
+    let t = Instant::now();
+
+    let input = fs::read_to_string("test")?;
     let (map, moves) = input.split_once("\n\n").unwrap();
 
     let mut max = ivec2(0, 0);
@@ -23,10 +25,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 match c {
                     ' ' => {}
                     '.' => {
-                        res.insert(ivec2(x as i32 + 1, y as i32 + 1), Pos::Open);
+                        res.insert(ivec2(x as i32, y as i32), Pos::Open);
                     }
                     '#' => {
-                        res.insert(ivec2(x as i32 + 1, y as i32 + 1), Pos::Wall);
+                        res.insert(ivec2(x as i32, y as i32), Pos::Wall);
                     }
                     _ => panic!(),
                 }
@@ -35,6 +37,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         res
     };
 
+    let mut replacements = HashMap::new();
+
+    {
+        let xa = 50;
+        let ya = 0;
+        let xb = 0;
+        let yb = 150;
+
+        for v in 0..50 {
+            replacements.insert(ivec2(xa + v, ya - 1), (ivec2(xb, yb + v), ivec2(1, 0)));
+            replacements.insert(ivec2(xb - 1, yb + v), (ivec2(xa + v, ya), ivec2(0, 1)));
+        }
+    }
+
     let mut pos = ivec2(1, 1);
     let mut dir = ivec2(1, 0);
 
@@ -42,7 +58,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         pos += dir;
     }
 
+    pos = ivec2(53, 3);
+    dir = ivec2(0, -1);
+
     let mut path = HashMap::new();
+
+    let moves = "10";
 
     let mut is_num = true;
     for m in moves
@@ -54,29 +75,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             let num = m.parse::<i32>().unwrap();
             for _ in 0..num {
                 let mut test_pos = pos + dir;
+                let mut test_dir = dir;
                 if !map.contains_key(&test_pos) {
-                    match (dir.x, dir.y) {
-                        (1, 0) => {
-                            test_pos.x = 1;
-                        }
-                        (0, -1) => {
-                            test_pos.y = max.y;
-                        }
-                        (-1, 0) => {
-                            test_pos.x = max.x;
-                        }
-                        (0, 1) => {
-                            test_pos.y = 1;
-                        }
-                        _ => panic!(),
-                    }
-                    while !map.contains_key(&test_pos) {
-                        test_pos += dir;
-                    }
+                    println!("test_pos: {test_pos}");
+                    (test_pos, test_dir) = replacements[&test_pos];
                 }
-                pos = match map.get(&test_pos).unwrap() {
-                    Pos::Wall => pos,
-                    Pos::Open => test_pos,
+                (pos, dir) = match map.get(&test_pos).unwrap() {
+                    Pos::Wall => (pos, dir),
+                    Pos::Open => (test_pos, test_dir),
                 };
 
                 path.insert(
@@ -115,8 +121,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 _ => panic!(),
             },
         );
-
-        println!("{} {}", pos.x, pos.y);
     }
 
     for y in 1..=max.y {
@@ -147,9 +151,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => panic!(),
     };
 
-    println!("{pos} {dir}");
+    // println!("{pos} {dir}");
 
-    println!("{}", 1000 * pos.y + 4 * pos.x + facing_score);
+    println!(
+        "res: {}, {} us",
+        1000 * pos.y + 4 * pos.x + facing_score,
+        t.elapsed().as_micros()
+    );
 
     Ok(())
 }
