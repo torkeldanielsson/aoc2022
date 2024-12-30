@@ -11,7 +11,7 @@ enum Pos {
 fn main() -> Result<(), Box<dyn Error>> {
     let t = Instant::now();
 
-    let input = fs::read_to_string("test")?;
+    let input = fs::read_to_string("input")?;
     let (map, moves) = input.split_once("\n\n").unwrap();
 
     let mut max = ivec2(0, 0);
@@ -123,19 +123,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let mut pos = ivec2(1, 1);
+    let mut pos = ivec2(0, 0);
     let mut dir = ivec2(1, 0);
 
     while !map.contains_key(&pos) {
         pos += dir;
     }
 
-    pos = ivec2(5, 195);
-    dir = ivec2(0, 1);
-
     let mut path = HashMap::new();
-
-    let moves = "10";
 
     let mut is_num = true;
     for m in moves
@@ -194,25 +189,25 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
     }
 
-    for y in 1..=max.y {
-        for x in 1..max.x {
-            let pos = ivec2(x, y);
-            if path.contains_key(&pos) {
-                print!("{}", path[&pos]);
-            } else if map.contains_key(&pos) {
-                print!(
-                    "{}",
-                    match map[&pos] {
-                        Pos::Open => '.',
-                        Pos::Wall => '#',
-                    }
-                );
-            } else {
-                print!(" ");
-            }
-        }
-        println!();
-    }
+    // for y in 1..=max.y {
+    //     for x in 1..max.x {
+    //         let pos = ivec2(x, y);
+    //         if path.contains_key(&pos) {
+    //             print!("{}", path[&pos]);
+    //         } else if map.contains_key(&pos) {
+    //             print!(
+    //                 "{}",
+    //                 match map[&pos] {
+    //                     Pos::Open => '.',
+    //                     Pos::Wall => '#',
+    //                 }
+    //             );
+    //         } else {
+    //             print!(" ");
+    //         }
+    //     }
+    //     println!();
+    // }
 
     let facing_score = match (dir.x, dir.y) {
         (1, 0) => 0,
@@ -222,13 +217,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => panic!(),
     };
 
-    // println!("{pos} {dir}");
-
     println!(
         "res: {}, {} us",
-        1000 * pos.y + 4 * pos.x + facing_score,
+        1000 * (pos.y + 1) + 4 * (pos.x + 1) + facing_score,
         t.elapsed().as_micros()
     );
+
+    // 44319 too high
 
     Ok(())
 }
