@@ -75,6 +75,54 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    {
+        let xa = 99;
+        let ya = 50;
+        let xb = 100;
+        let yb = 49;
+
+        for v in 0..50 {
+            replacements.insert(ivec2(xa + 1, ya + v), (ivec2(xb + v, yb), ivec2(0, -1)));
+            replacements.insert(ivec2(xb + v, yb + 1), (ivec2(xa, ya + v), ivec2(-1, 0)));
+        }
+    }
+
+    {
+        let xa = 149;
+        let ya = 0;
+        let xb = 99;
+        let yb = 149;
+
+        for v in 0..50 {
+            replacements.insert(ivec2(xa + 1, ya + v), (ivec2(xb, yb - v), ivec2(-1, 0)));
+            replacements.insert(ivec2(xb + 1, yb - v), (ivec2(xa, ya + v), ivec2(-1, 0)));
+        }
+    }
+
+    {
+        let xa = 50;
+        let ya = 149;
+        let xb = 49;
+        let yb = 150;
+
+        for v in 0..50 {
+            replacements.insert(ivec2(xa + v, ya + 1), (ivec2(xb, yb + v), ivec2(-1, 0)));
+            replacements.insert(ivec2(xb + 1, yb + v), (ivec2(xa + v, ya), ivec2(0, -1)));
+        }
+    }
+
+    {
+        let xa = 100;
+        let ya = 0;
+        let xb = 0;
+        let yb = 199;
+
+        for v in 0..50 {
+            replacements.insert(ivec2(xa + v, ya - 1), (ivec2(xb + v, yb), ivec2(0, -1)));
+            replacements.insert(ivec2(xb + v, yb + 1), (ivec2(xa + v, ya), ivec2(0, 1)));
+        }
+    }
+
     let mut pos = ivec2(1, 1);
     let mut dir = ivec2(1, 0);
 
@@ -82,8 +130,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         pos += dir;
     }
 
-    pos = ivec2(5, 145);
-    dir = ivec2(-1, 0);
+    pos = ivec2(5, 195);
+    dir = ivec2(0, 1);
 
     let mut path = HashMap::new();
 
